@@ -103,7 +103,7 @@ export default class OpenInZed extends Plugin {
             await launchZed(this.settings.zedPath, target);
         } catch (error) {
             new Notice(
-                `Failed to launch Zed at "${this.settings.zedPath}". ` + `Check the path in plugin settings.`,
+                `Failed to launch Zed at "${this.settings.zedPath}". Check the path in plugin settings.`,
             );
             console.error(`[${this.manifest.id}] launch error`, error);
         }
