@@ -23,7 +23,7 @@ An absolute path is required because Obsidian launched from Finder or Dock does 
 ## Installation (manual)
 
 1. Build: `npm install && npm run build`.
-2. Copy `manifest.json` and `main.js` into `<your-vault>/.obsidian/plugins/open-in-zed/`.
+2. Copy the contents of `target/` into `<your-vault>/.obsidian/plugins/open-in-zed/`. E.g. `cp -r target/* <your-vault>/.obsidian/plugins/open-in-zed/`.
 3. Enable `Open in Zed` in Obsidian's Community Plugins settings.
 4. Open the plugin's settings and confirm the path to the `zed` binary.
 
@@ -31,10 +31,12 @@ An absolute path is required because Obsidian launched from Finder or Dock does 
 
 ```bash
 npm install
-npm run dev      # esbuild watch mode
+npm run dev      # esbuild watch mode, rebuilds into target/
 npm run check    # type-check + lint + format
-npm run build    # production build
+npm run build    # production build into target/
 ```
+
+For fast iteration during development, create a `.devtarget` file in the repo root containing the absolute path to your test vault's plugin folder (one path per line, comments with `#` or `//` allowed). Each build then auto-syncs `target/*` into that path. Alternatively, symlink `target/` into your vault.
 
 ## License
 

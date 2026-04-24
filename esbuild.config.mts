@@ -1,5 +1,7 @@
 import builtins from "builtin-modules";
 import esbuild from "esbuild";
+import fs from "fs";
+import path from "path";
 import process from "process";
 
 const banner = `/*
@@ -9,6 +11,51 @@ if you want to view the source, please visit the github repository of this plugi
 `;
 
 const prod = process.argv[2] === "production";
+const TARGET_DIR = "target";
+const STATIC_ASSETS = ["manifest.json", "versions.json"];
+
+// After each successful build:
+//   1. Copy static assets (manifest.json, versions.json if present) into
+//      target/ so the folder is a drop-in plugin install.
+//   2. If .devtarget exists, copy all files from target/ into the directory
+//      named on the first non-comment line. Lets rebuilds land directly
+//      in a live vault without symlinks.
+const copyAssetsPlugin: esbuild.Plugin = {
+    name: "copy-assets",
+    setup(build) {
+        build.onEnd((result) => {
+            if (result.errors.length > 0) return;
+
+            fs.mkdirSync(TARGET_DIR, { recursive: true });
+
+            for (const asset of STATIC_ASSETS) {
+                if (fs.existsSync(asset)) {
+                    fs.copyFileSync(asset, path.join(TARGET_DIR, asset));
+                }
+            }
+
+            const devTarget = readDevTarget();
+            if (devTarget !== null) {
+                fs.mkdirSync(devTarget, { recursive: true });
+                for (const file of fs.readdirSync(TARGET_DIR)) {
+                    fs.copyFileSync(path.join(TARGET_DIR, file), path.join(devTarget, file));
+                }
+                console.log(`[copy-assets] synced target/ → ${devTarget}`);
+            }
+        });
+    },
+};
+
+function readDevTarget(): string | null {
+    if (!fs.existsSync(".devtarget")) return null;
+    const line = fs
+        .readFileSync(".devtarget", "utf8")
+        .trim()
+        .split("\n")
+        .map((s) => s.trim())
+        .find((s) => s !== "" && !s.startsWith("#") && !s.startsWith("//"));
+    return line ?? null;
+}
 
 const context = await esbuild.context({
     banner: { js: banner },
@@ -37,7 +84,8 @@ const context = await esbuild.context({
     minify: prod,
     platform: "browser",
     treeShaking: true,
-    outfile: "main.js",
+    outfile: path.join(TARGET_DIR, "main.js"),
+    plugins: [copyAssetsPlugin],
 });
 
 if (prod) {

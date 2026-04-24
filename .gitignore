@@ -10,8 +10,8 @@
 node_modules
 pnpm-lock.yaml
 
-# Compiled plugin bundle — generated, do not commit
-main.js
+# Build output — generated, do not commit
+target/
 
 # Source maps
 *.map
