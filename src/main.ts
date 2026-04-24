@@ -43,7 +43,6 @@ export default class OpenInZed extends Plugin {
         });
 
         this.addCommand({
-            // eslint-disable-next-line obsidianmd/commands/no-plugin-id-in-command-id
             id: "open-vault-in-zed",
             name: "Open vault in Zed",
             callback: () => {
