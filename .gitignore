@@ -1,0 +1,27 @@
+# vscode
+.vscode/*
+!.vscode/settings.json
+
+# Intellij
+*.iml
+.idea
+
+# npm
+node_modules
+pnpm-lock.yaml
+
+# Compiled plugin bundle — generated, do not commit
+main.js
+
+# Source maps
+*.map
+
+# Obsidian plugin local data
+data.json
+
+# macOS
+.DS_Store
+
+# Personal dev artifacts
+.hotreload
+.devtarget

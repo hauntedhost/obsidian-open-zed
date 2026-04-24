@@ -1,0 +1,9 @@
+{
+  "id": "open-in-zed",
+  "name": "Open in Zed",
+  "version": "0.1.0",
+  "minAppVersion": "1.7.2",
+  "description": "Open the current vault, folder, or note in the Zed editor.",
+  "author": "Jules Omlor",
+  "isDesktopOnly": true
+}
