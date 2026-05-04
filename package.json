@@ -12,6 +12,7 @@
   "scripts": {
     "dev": "node esbuild.config.mts",
     "build": "node esbuild.config.mts production",
+    "bump-version": "node version-bump.mts",
     "check": "npm run type-check && npm run lint && npm run format",
     "type-check": "tsc",
     "lint": "biome lint && eslint",

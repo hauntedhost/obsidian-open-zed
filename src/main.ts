@@ -7,6 +7,7 @@ import {
     Plugin,
     type TAbstractFile,
 } from "obsidian";
+import path from "path";
 import { DEFAULT_SETTINGS, type OpenInZedSettings, OpenInZedSettingsTab } from "./settings";
 import { launchZed } from "./zed";
 
@@ -75,7 +76,7 @@ export default class OpenInZed extends Plugin {
         const basePath = this.getVaultBasePath();
         if (basePath === null) return;
 
-        let target = `${basePath}/${file.path}`;
+        let target = path.join(basePath, file.path);
 
         // Append 1-based line:col only when the menu's file is the currently
         // active note AND a MarkdownView cursor is available. Obsidian's
@@ -100,7 +101,7 @@ export default class OpenInZed extends Plugin {
 
     private async launch(target: string): Promise<void> {
         try {
-            await launchZed(this.settings.zedPath, target);
+            await launchZed(this.settings.zedPath, this.settings.zedAppName, target);
         } catch (error) {
             new Notice(
                 `Failed to launch Zed at "${this.settings.zedPath}". Check the path in plugin settings.`,

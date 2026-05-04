@@ -5,5 +5,6 @@
   "minAppVersion": "1.7.2",
   "description": "Open the current vault, folder, or note in the Zed editor.",
   "author": "Jules Omlor",
+  "authorUrl": "https://haunted.host",
   "isDesktopOnly": true
 }

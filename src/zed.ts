@@ -15,7 +15,7 @@ import { execFile } from "child_process";
  * Rejects with the underlying NodeJS.ErrnoException from the zed CLI on
  * failure; focus step errors do not propagate.
  */
-export async function launchZed(zedPath: string, target: string): Promise<void> {
+export async function launchZed(zedPath: string, zedAppName: string, target: string): Promise<void> {
     await new Promise<void>((resolve, reject) => {
         execFile(zedPath, [target], (error: Error | null) => {
             if (error) {
@@ -28,7 +28,7 @@ export async function launchZed(zedPath: string, target: string): Promise<void> 
 
     if (process.platform === "darwin") {
         await new Promise<void>((resolve) => {
-            execFile("open", ["-a", "Zed"], () => {
+            execFile("open", ["-a", zedAppName], () => {
                 resolve();
             });
         });

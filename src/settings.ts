@@ -3,6 +3,7 @@ import type OpenInZed from "./main";
 
 export interface OpenInZedSettings {
     zedPath: string;
+    zedAppName: string;
 }
 
 // Zed's "Install CLI" command drops the shim at /usr/local/bin/zed on macOS.
@@ -10,10 +11,12 @@ export interface OpenInZedSettings {
 // Linux users typically have ~/.local/bin/zed or /usr/bin/zed.
 export const DEFAULT_SETTINGS: OpenInZedSettings = {
     zedPath: "/usr/local/bin/zed",
+    zedAppName: "Zed",
 };
 
 export class OpenInZedSettingsTab extends PluginSettingTab {
     plugin: OpenInZed;
+    private saveTimer: number | null = null;
 
     constructor(app: App, plugin: OpenInZed) {
         super(app, plugin);
@@ -37,11 +40,47 @@ export class OpenInZedSettingsTab extends PluginSettingTab {
                 text
                     .setPlaceholder(DEFAULT_SETTINGS.zedPath)
                     .setValue(this.plugin.settings.zedPath)
-                    .onChange(async (value) => {
+                    .onChange((value) => {
                         const trimmed = value.trim();
                         this.plugin.settings.zedPath = trimmed || DEFAULT_SETTINGS.zedPath;
-                        await this.plugin.saveSettings();
+                        this.queueSave();
                     }),
             );
+
+        new Setting(containerEl)
+            .setName("Zed app name")
+            .setDesc(
+                "macOS application name used to focus Zed after launch. Use 'Zed Preview' " +
+                    "or 'Zed Dev' if you run one of those builds.",
+            )
+            .addText((text) =>
+                text
+                    .setPlaceholder(DEFAULT_SETTINGS.zedAppName)
+                    .setValue(this.plugin.settings.zedAppName)
+                    .onChange((value) => {
+                        const trimmed = value.trim();
+                        this.plugin.settings.zedAppName = trimmed || DEFAULT_SETTINGS.zedAppName;
+                        this.queueSave();
+                    }),
+            );
+    }
+
+    override hide(): void {
+        if (this.saveTimer !== null) {
+            window.clearTimeout(this.saveTimer);
+            this.saveTimer = null;
+            void this.plugin.saveSettings();
+        }
+    }
+
+    private queueSave(): void {
+        if (this.saveTimer !== null) {
+            window.clearTimeout(this.saveTimer);
+        }
+
+        this.saveTimer = window.setTimeout(() => {
+            this.saveTimer = null;
+            void this.plugin.saveSettings();
+        }, 400);
     }
 }
